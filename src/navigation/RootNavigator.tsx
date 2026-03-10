@@ -1,0 +1,28 @@
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { RootStackParamList } from './types';
+
+import LoaderScreen from '../screens/LoadersScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
+import MainTabs from './MainTabs';
+
+import FindFishingLureScreen from '../screens/FindScreen';
+import LogCatchScreen from '../screens/CatchScreen';
+import StatsScreen from '../screens/StatsScreen';
+import AnglerStoriesScreen from '../screens/AngstorScreen';
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export default function RootNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Loader" component={LoaderScreen} />
+      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+      <Stack.Screen name="MainTabs" component={MainTabs} />
+      <Stack.Screen name="FindFishingLure" component={FindFishingLureScreen} />
+      <Stack.Screen name="LogCatch" component={LogCatchScreen} />
+      <Stack.Screen name="Stats" component={StatsScreen} />
+      <Stack.Screen name="AnglerStories" component={AnglerStoriesScreen} />
+    </Stack.Navigator>
+  );
+}
