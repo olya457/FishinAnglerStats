@@ -76,7 +76,8 @@ export default function OnboardingScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
 
-  const padX = clamp(Math.round(width * 0.06), 16, 28);
+  const isSmall = height < 720 || width < 360;
+  const padX = clamp(Math.round(width * (isSmall ? 0.05 : 0.06)), 14, 26);
 
   const slides: Slide[] = useMemo(
     () => [
@@ -85,7 +86,8 @@ export default function OnboardingScreen({ navigation }: Props) {
         image: ON1,
         eyebrow: 'Quick Start',
         title: 'Track Every Catch',
-        desc: 'Save fish details, session notes, and lure information in a cleaner and faster way.',
+        desc:
+          'Save fish details, session notes, and lure information in a cleaner and faster way.',
         cta: 'Continue',
         tags: ['Fast logging', 'Personal history'],
       },
@@ -94,7 +96,8 @@ export default function OnboardingScreen({ navigation }: Props) {
         image: ON2,
         eyebrow: 'Personal View',
         title: 'See Your Fishing Patterns',
-        desc: 'Review your activity over time and notice which habits, sessions, and choices work best.',
+        desc:
+          'Review your activity over time and notice which habits, sessions, and choices work best.',
         cta: 'Continue',
         tags: ['Trends', 'Session review'],
       },
@@ -103,7 +106,8 @@ export default function OnboardingScreen({ navigation }: Props) {
         image: ON3,
         eyebrow: 'Guided Support',
         title: 'Smarter Lure Suggestions',
-        desc: 'Use your own data as a reference point for more confident lure choices and session planning.',
+        desc:
+          'Use your own data as a reference point for more confident lure choices and session planning.',
         cta: 'Continue',
         tags: ['Data-based', 'Lure focus'],
       },
@@ -112,7 +116,8 @@ export default function OnboardingScreen({ navigation }: Props) {
         image: ON4,
         eyebrow: 'Stay Ready',
         title: 'Prepare for the Next Session',
-        desc: 'Keep your workflow simple, organized, and ready whenever you want to log or review activity.',
+        desc:
+          'Keep your workflow simple, organized, and ready whenever you want to log or review activity.',
         cta: "Let's Start",
         tags: ['Organized flow', 'Ready anytime'],
       },
@@ -126,25 +131,26 @@ export default function OnboardingScreen({ navigation }: Props) {
   const transition = useRef(new Animated.Value(1)).current;
   const cardGlow = useRef(new Animated.Value(0)).current;
 
-  const imageW = clamp(Math.round(width * 0.78), 260, 420);
-  const imageH = Math.round(imageW * 0.94);
+  const imageW = clamp(Math.round(width * (isSmall ? 0.74 : 0.78)), 230, 410);
+  const imageH = Math.round(imageW * (isSmall ? 0.88 : 0.94));
 
   const cardW = width - padX * 2;
   const cardRadius = 26;
-  const cardPad = clamp(Math.round(width * 0.055), 16, 22);
+  const cardPad = clamp(Math.round(width * (isSmall ? 0.05 : 0.055)), 14, 22);
 
-  const btnH = 54;
-  const btnW = clamp(Math.round(cardW * 0.76), 230, 330);
+  const btnH = clamp(Math.round(height * (isSmall ? 0.052 : 0.056)), 44, 56);
+  const btnW = clamp(Math.round(cardW * (isSmall ? 0.78 : 0.76)), 220, 330);
 
   const topPadding = Platform.OS === 'android' ? insets.top + 6 : insets.top + 4;
-  const heroTopGap = 28;
+  const heroTopGap = isSmall ? 20 : 28;
   const imageTop = topPadding + 54 + heroTopGap;
   const imageBottom = imageTop + imageH;
 
-  const estimatedCardH = 292;
+  const bottomReserved = 26 + insets.bottom;
+  const estimatedCardH = isSmall ? 300 : 332;
   const cardTop = Math.min(
     Math.round(imageBottom - 8),
-    height - insets.bottom - estimatedCardH - 40,
+    height - bottomReserved - estimatedCardH,
   );
 
   const progress = ((index + 1) / slides.length) * 100;
@@ -280,7 +286,7 @@ export default function OnboardingScreen({ navigation }: Props) {
                   borderRadius: cardRadius,
                   paddingHorizontal: cardPad,
                   paddingTop: cardPad,
-                  paddingBottom: 34,
+                  paddingBottom: cardPad + 6,
                   opacity: cardOpacity,
                   transform: [{ translateY: cardTranslateY }],
                 },
@@ -302,8 +308,8 @@ export default function OnboardingScreen({ navigation }: Props) {
                 style={[
                   styles.h1,
                   {
-                    fontSize: 24,
-                    lineHeight: 29,
+                    fontSize: isSmall ? 22 : 24,
+                    lineHeight: isSmall ? 26 : 29,
                     marginTop: 6,
                   },
                 ]}
@@ -315,9 +321,9 @@ export default function OnboardingScreen({ navigation }: Props) {
                 style={[
                   styles.p,
                   {
-                    marginTop: 12,
-                    fontSize: 14,
-                    lineHeight: 20,
+                    marginTop: isSmall ? 10 : 12,
+                    fontSize: isSmall ? 13 : 14,
+                    lineHeight: isSmall ? 18 : 20,
                   },
                 ]}
               >
@@ -330,33 +336,22 @@ export default function OnboardingScreen({ navigation }: Props) {
                 ))}
               </View>
 
-              <View style={styles.dotsRow}>
-                {slides.map((item, i) => {
-                  const active = i === index;
-                  return (
-                    <View
-                      key={item.key}
-                      style={[
-                        styles.dot,
-                        active && styles.dotActive,
-                      ]}
-                    />
-                  );
-                })}
-              </View>
+              <View style={styles.footerRow}>
+                <View style={styles.dotsRow}>
+                  {slides.map((item, i) => {
+                    const active = i === index;
+                    return (
+                      <View
+                        key={item.key}
+                        style={[
+                          styles.dot,
+                          active && styles.dotActive,
+                        ]}
+                      />
+                    );
+                  })}
+                </View>
 
-              <View
-                style={[
-                  styles.bottomButtonWrap,
-                  {
-                    bottom: -(btnH / 2) - 10,
-                    width: btnW,
-                    height: btnH,
-                    borderRadius: btnH / 2,
-                    left: -140,
-                  },
-                ]}
-              >
                 <Pressable
                   onPress={onPressCTA}
                   style={({ pressed }) => [
@@ -369,7 +364,7 @@ export default function OnboardingScreen({ navigation }: Props) {
                     },
                   ]}
                 >
-                  <Text style={[styles.btnText, { fontSize: 17 }]}>
+                  <Text style={[styles.btnText, { fontSize: isSmall ? 16 : 17 }]}>
                     {slide.cta}
                   </Text>
                 </Pressable>
@@ -444,8 +439,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(4,16,38,0.92)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.06)',
-    overflow: 'visible',
-    position: 'relative',
+    overflow: 'hidden',
   },
 
   cardGlow: {
@@ -503,12 +497,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
+  footerRow: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
+
   dotsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 14,
-    marginBottom: 0,
+    marginBottom: 14,
   },
 
   dot: {
@@ -522,12 +520,6 @@ const styles = StyleSheet.create({
   dotActive: {
     width: 20,
     backgroundColor: '#0A5CC5',
-  },
-
-  bottomButtonWrap: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 
   btn: {
